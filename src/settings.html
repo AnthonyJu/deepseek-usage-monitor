@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'"
+    />
+    <title>DeepSeek Usage Monitor - 设置</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+        background: transparent;
+        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.9);
+        -webkit-font-smoothing: antialiased;
+        overflow: hidden;
+      }
+
+      body {
+        padding: 0;
+      }
+
+      .app {
+        position: relative;
+        height: 100%;
+        padding: 12px;
+        border-radius: 16px;
+        background: rgba(20, 20, 24, 0.6);
+        border: 0.5px solid rgba(255, 255, 255, 0.12);
+        box-shadow:
+          0 10px 30px rgba(0, 0, 0, 0.25),
+          0 1px 3px rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .titlebar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        /* height: 28px; */
+        padding-left: 66px;
+        -webkit-app-region: drag;
+      }
+      .title-group {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+      }
+      .title {
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: -0.2px;
+        color: rgba(255, 255, 255, 0.95);
+      }
+      .subtitle {
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.45);
+        letter-spacing: 0.3px;
+      }
+
+      .icon-btn {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: rgba(255, 255, 255, 0.08);
+        color: rgba(255, 255, 255, 0.7);
+        cursor: pointer;
+        transition: all 0.18s ease;
+        -webkit-app-region: no-drag;
+      }
+      .icon-btn:hover {
+        background: rgba(255, 255, 255, 0.16);
+        color: rgba(255, 255, 255, 0.95);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        align-content: start;
+      }
+
+      .card {
+        background: rgba(255, 255, 255, 0.06);
+        border: 0.5px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .span-2 {
+        grid-column: 1 / -1;
+      }
+
+      .label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: rgba(255, 255, 255, 0.8);
+      }
+      .desc {
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.4);
+        line-height: 1.4;
+      }
+      .desc-inline {
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.35);
+      }
+
+      .input-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px;
+        align-items: center;
+      }
+      .input-row.single {
+        grid-template-columns: 1fr;
+      }
+      input,
+      select {
+        width: 100%;
+        padding: 8px 10px;
+        border: 0.5px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        font-size: 12px;
+        font-family: inherit;
+        color: rgba(255, 255, 255, 0.9);
+        background: rgba(255, 255, 255, 0.05);
+        outline: none;
+        transition: all 0.18s ease;
+      }
+      input:focus,
+      select:focus {
+        border-color: rgba(100, 160, 255, 0.45);
+        box-shadow: 0 0 0 3px rgba(80, 140, 255, 0.12);
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .btn {
+        padding: 7px 14px;
+        border: none;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.18s ease;
+      }
+      .btn-primary {
+        background: #0a84ff;
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: #409cff;
+      }
+      .btn-primary:disabled {
+        background: rgba(10, 132, 255, 0.25);
+        cursor: not-allowed;
+      }
+      .btn-danger {
+        background: rgba(255, 69, 58, 0.08);
+        color: #ff453a;
+        border: 0.5px solid rgba(255, 69, 58, 0.2);
+      }
+      .btn-danger:hover {
+        background: #ff453a;
+        color: #fff;
+      }
+
+      .toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .toggle-label {
+        font-size: 13px;
+      }
+
+      .toggle-switch {
+        position: relative;
+        width: 40px;
+        height: 22px;
+        cursor: pointer;
+      }
+      .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .toggle-slider {
+        position: absolute;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 11px;
+        transition: background 0.2s;
+      }
+      .toggle-slider::before {
+        content: '';
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        left: 2px;
+        top: 2px;
+        background: #fff;
+        border-radius: 50%;
+        transition: transform 0.2s;
+        box-shadow:
+          0 1px 3px rgba(0, 0, 0, 0.2),
+          0 0 0 0.5px rgba(255, 255, 255, 0.08);
+      }
+      .toggle-switch input:checked + .toggle-slider {
+        background: #30d158;
+      }
+      .toggle-switch input:checked + .toggle-slider::before {
+        transform: translateX(18px);
+      }
+
+      .status-msg {
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 11px;
+        min-height: 28px;
+        display: flex;
+        align-items: center;
+        transition: all 0.25s ease;
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        z-index: 100;
+        white-space: nowrap;
+      }
+      .status-msg.success {
+        background: rgba(48, 209, 88, 0.12);
+        color: #30d158;
+      }
+      .status-msg.error {
+        background: rgba(255, 69, 58, 0.12);
+        color: #ff453a;
+      }
+      .status-msg.info {
+        background: rgba(64, 156, 255, 0.12);
+        color: #409cff;
+      }
+      .hidden {
+        display: none;
+      }
+
+      .key-badge {
+        display: inline-block;
+        font-size: 10px;
+        padding: 2px 8px;
+        border-radius: 6px;
+        font-weight: 700;
+      }
+      .get-token-btn {
+        margin-left: auto;
+        padding: 3px 10px;
+        border: 0.5px solid rgba(100, 160, 255, 0.35);
+        border-radius: 6px;
+        font-size: 10px;
+        font-weight: 600;
+        font-family: inherit;
+        color: #409cff;
+        background: rgba(100, 160, 255, 0.08);
+        cursor: pointer;
+        transition: all 0.18s ease;
+        white-space: nowrap;
+      }
+      .get-token-btn:hover {
+        background: rgba(100, 160, 255, 0.2);
+        border-color: rgba(100, 160, 255, 0.6);
+      }
+
+      .key-badge.saved {
+        background: rgba(48, 209, 88, 0.12);
+        color: #30d158;
+      }
+      .key-badge.empty {
+        background: rgba(255, 255, 255, 0.08);
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      /* ---- light theme ---- */
+      [data-theme='light'] body {
+        color: rgba(0, 0, 0, 0.85);
+      }
+      [data-theme='light'] .app {
+        background: rgba(255, 255, 255, 0.85);
+        border-color: rgba(0, 0, 0, 0.06);
+        box-shadow:
+          0 12px 30px rgba(0, 0, 0, 0.12),
+          0 1px 3px rgba(0, 0, 0, 0.08);
+      }
+      [data-theme='light'] .title {
+        color: rgba(0, 0, 0, 0.85);
+      }
+      [data-theme='light'] .subtitle {
+        color: rgba(0, 0, 0, 0.45);
+      }
+      [data-theme='light'] .icon-btn {
+        background: rgba(0, 0, 0, 0.05);
+        color: rgba(0, 0, 0, 0.6);
+      }
+      [data-theme='light'] .icon-btn:hover {
+        background: rgba(0, 0, 0, 0.1);
+        color: rgba(0, 0, 0, 0.85);
+      }
+      [data-theme='light'] .card {
+        background: rgba(255, 255, 255, 0.7);
+        border-color: rgba(0, 0, 0, 0.06);
+      }
+      [data-theme='light'] .label {
+        color: rgba(0, 0, 0, 0.5);
+      }
+      [data-theme='light'] .desc {
+        color: rgba(0, 0, 0, 0.45);
+      }
+      [data-theme='light'] .desc-inline {
+        color: rgba(0, 0, 0, 0.4);
+      }
+      [data-theme='light'] input,
+      [data-theme='light'] select {
+        background: rgba(0, 0, 0, 0.03);
+        color: rgba(0, 0, 0, 0.85);
+        border-color: rgba(0, 0, 0, 0.1);
+      }
+      [data-theme='light'] input:focus,
+      [data-theme='light'] select:focus {
+        border-color: rgba(0, 122, 255, 0.45);
+        box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.12);
+        background: rgba(0, 0, 0, 0.02);
+      }
+      [data-theme='light'] .btn-primary {
+        background: #007aff;
+      }
+      [data-theme='light'] .btn-primary:hover {
+        background: #0066d6;
+      }
+      [data-theme='light'] .btn-primary:disabled {
+        background: rgba(0, 122, 255, 0.3);
+      }
+      [data-theme='light'] .btn-danger {
+        background: rgba(255, 59, 48, 0.08);
+        color: #dc2626;
+        border-color: rgba(255, 59, 48, 0.2);
+      }
+      [data-theme='light'] .btn-danger:hover {
+        background: #dc2626;
+        color: #fff;
+      }
+      [data-theme='light'] .toggle-slider {
+        background: rgba(0, 0, 0, 0.12);
+      }
+      [data-theme='light'] .status-msg.success {
+        background: rgba(52, 199, 89, 0.12);
+        color: #1a7d3c;
+      }
+      [data-theme='light'] .status-msg.error {
+        background: rgba(255, 59, 48, 0.12);
+        color: #b91c1c;
+      }
+      [data-theme='light'] .status-msg.info {
+        background: rgba(0, 122, 255, 0.12);
+        color: #1a56b8;
+      }
+      [data-theme='light'] .get-token-btn {
+        border-color: rgba(0, 122, 255, 0.3);
+        color: #007aff;
+        background: rgba(0, 122, 255, 0.06);
+      }
+      [data-theme='light'] .get-token-btn:hover {
+        background: rgba(0, 122, 255, 0.15);
+        border-color: rgba(0, 122, 255, 0.5);
+      }
+      [data-theme='light'] .key-badge.saved {
+        background: rgba(52, 199, 89, 0.12);
+        color: #1a7d3c;
+      }
+      [data-theme='light'] .key-badge.empty {
+        background: rgba(0, 0, 0, 0.05);
+        color: rgba(0, 0, 0, 0.45);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div class="titlebar">
+        <div class="title-group">
+          <span class="title">设置</span>
+          <span class="subtitle">DeepSeek Usage Monitor</span>
+        </div>
+      </div>
+
+      <div id="statusMsg" class="status-msg hidden"></div>
+
+      <div class="grid">
+        <!-- 网页 Token -->
+        <div class="card span-2">
+          <span class="label">
+            网页 Token
+            <span id="webTokenBadge" class="key-badge empty">未设置</span>
+            <button id="getTokenBtn" class="get-token-btn">获取</button>
+          </span>
+          <p class="desc">
+            点击"获取"跳转登录页并复制提取脚本，打开浏览器控制台粘贴运行即可复制 Token。
+          </p>
+          <div class="input-row">
+            <input
+              id="webTokenInput"
+              type="password"
+              placeholder="输入网页 Token 或聚焦自动读取剪贴板"
+            />
+            <button id="saveWebTokenBtn" class="btn btn-primary">保存</button>
+          </div>
+          <div class="input-row single">
+            <button id="removeWebTokenBtn" class="btn btn-danger hidden">删除</button>
+          </div>
+        </div>
+
+        <!-- 自动刷新 -->
+        <div class="card">
+          <span class="label">自动刷新</span>
+          <select id="refreshSelect">
+            <option value="0">关闭</option>
+            <option value="2">每 2 分钟</option>
+            <option value="5">每 5 分钟</option>
+            <option value="15">每 15 分钟</option>
+            <option value="30">每 30 分钟</option>
+          </select>
+          <span class="desc-inline">关闭后仅在打开面板时更新</span>
+        </div>
+
+        <!-- 系统主题 -->
+        <div class="card">
+          <span class="label">系统主题</span>
+          <select id="colorSchemeSelect">
+            <option value="system">跟随系统</option>
+            <option value="light">浅色</option>
+            <option value="dark">深色</option>
+          </select>
+          <span class="desc-inline">影响托盘面板与设置页</span>
+        </div>
+
+        <!-- 余额预警阈值 -->
+        <div class="card">
+          <span class="label">余额预警阈值</span>
+          <input id="thresholdInput" type="number" placeholder="例如：10" min="0" step="0.01" />
+          <span class="desc-inline">总余额低于该金额（CNY）提示</span>
+        </div>
+
+        <!-- 当日花费预警阈值 -->
+        <div class="card">
+          <span class="label">Usage · 花费预警（低 / 中 / 高 CNY）</span>
+          <div class="threshold-row" style="display:flex;gap:6px;align-items:center;margin-top:8px">
+            <span style="font-size:11px;color:rgba(153,153,153,0.8)">低</span>
+            <input id="dailyCostLowInput" type="number" placeholder="2" min="0" step="0.1" style="flex:1;min-width:0" />
+            <span style="font-size:11px;color:rgba(153,153,153,0.8)">中</span>
+            <input id="dailyCostMedInput" type="number" placeholder="5" min="0" step="0.1" style="flex:1;min-width:0" />
+            <span style="font-size:11px;color:rgba(153,153,153,0.8)">高</span>
+            <input id="dailyCostHighInput" type="number" placeholder="8" min="0" step="0.1" style="flex:1;min-width:0" />
+          </div>
+          <span class="desc-inline">花费胶囊颜色阈值，超高档触发系统通知</span>
+        </div>
+
+        <!-- 开机自启 + 状态 -->
+        <div class="card span-2">
+          <div class="toggle-row">
+            <span class="toggle-label">开机自动启动</span>
+            <label class="toggle-switch">
+              <input id="autoLaunchToggle" type="checkbox" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const $ = (id) => document.getElementById(id)
+
+      const webTokenInput = $('webTokenInput')
+      const webTokenBadge = $('webTokenBadge')
+      const getTokenBtn = $('getTokenBtn')
+      const saveWebTokenBtn = $('saveWebTokenBtn')
+      const removeWebTokenBtn = $('removeWebTokenBtn')
+      const refreshSelect = $('refreshSelect')
+      const thresholdInput = $('thresholdInput')
+      const dailyCostLowInput = $('dailyCostLowInput')
+      const dailyCostMedInput = $('dailyCostMedInput')
+      const dailyCostHighInput = $('dailyCostHighInput')
+      const colorSchemeSelect = $('colorSchemeSelect')
+      const autoLaunchToggle = $('autoLaunchToggle')
+      const statusMsg = $('statusMsg')
+
+      function showStatus(msg, type, duration) {
+        statusMsg.textContent = msg
+        statusMsg.className = 'status-msg ' + type
+        if (duration > 0)
+          setTimeout(() => {
+            statusMsg.classList.add('hidden')
+          }, duration)
+      }
+
+      function setBadge(el, val) {
+        el.textContent = val ? '已保存' : '未设置'
+        el.className = 'key-badge ' + (val ? 'saved' : 'empty')
+      }
+
+      // ---- 加载设置 ----
+      async function loadSettings() {
+        const s = await window.electronAPI.getSettings()
+        setBadge(webTokenBadge, s.hasWebToken)
+        removeWebTokenBtn.classList.toggle('hidden', !s.hasWebToken)
+        refreshSelect.value = s.autoRefreshInterval ?? 2
+        thresholdInput.value = s.balanceThreshold ?? ''
+        dailyCostLowInput.value = s.dailyCostLow ?? 2
+        dailyCostMedInput.value = s.dailyCostMed ?? 5
+        dailyCostHighInput.value = s.dailyCostHigh ?? 8
+        colorSchemeSelect.value = s.colorScheme ?? 'system'
+        autoLaunchToggle.checked = s.autoLaunch ?? false
+      }
+
+      // ---- Web Token ----
+      async function saveWebToken() {
+        const token = webTokenInput.value.trim()
+        if (!token) return
+        saveWebTokenBtn.disabled = true
+        saveWebTokenBtn.textContent = '验证中...'
+        const r = await window.electronAPI.saveWebToken(token)
+        if (r.success) {
+          setBadge(webTokenBadge, true)
+          removeWebTokenBtn.classList.remove('hidden')
+          webTokenInput.value = ''
+          showStatus(r.message, 'success', 4000)
+        } else {
+          showStatus(r.message, 'error', 4000)
+        }
+        saveWebTokenBtn.disabled = false
+        saveWebTokenBtn.textContent = '保存'
+      }
+
+      async function removeWebToken() {
+        await window.electronAPI.removeWebToken()
+        setBadge(webTokenBadge, false)
+        removeWebTokenBtn.classList.add('hidden')
+        webTokenInput.value = ''
+        showStatus('网页 Token 已删除', 'success', 4000)
+      }
+
+      // ---- 其他设置 ----
+      async function setRefresh() {
+        const min = parseInt(refreshSelect.value)
+        await window.electronAPI.setAutoRefreshInterval(min)
+        showStatus('自动刷新: ' + (min === 0 ? '已关闭' : '每 ' + min + ' 分钟'), 'success', 3000)
+      }
+
+      let thresholdTimer, dailyCostTimer
+      function onThresholdChange() {
+        clearTimeout(thresholdTimer)
+        thresholdTimer = setTimeout(async () => {
+          const v = thresholdInput.value === '' ? null : parseFloat(thresholdInput.value)
+          await window.electronAPI.setBalanceThreshold(v)
+          showStatus('预警阈值已更新', 'success', 3000)
+        }, 500)
+      }
+
+      async function onDailyCostThresholdChange() {
+        clearTimeout(dailyCostTimer)
+        dailyCostTimer = setTimeout(async () => {
+          const low = parseFloat(dailyCostLowInput.value) || 2
+          const med = parseFloat(dailyCostMedInput.value) || 5
+          const high = parseFloat(dailyCostHighInput.value) || 8
+          await window.electronAPI.setDailyCostThresholds({ low, med, high })
+          showStatus('阈值已更新', 'success', 3000)
+        }, 500)
+      }
+
+      async function setColorScheme() {
+        await window.electronAPI.setColorScheme(colorSchemeSelect.value)
+        showStatus('主题已更新', 'success', 3000)
+      }
+
+      async function toggleLaunch() {
+        await window.electronAPI.toggleAutoLaunch(autoLaunchToggle.checked)
+        showStatus(autoLaunchToggle.checked ? '已开启开机自启' : '已关闭开机自启', 'success', 3000)
+      }
+
+      // ---- 事件绑定 ----
+      saveWebTokenBtn.addEventListener('click', saveWebToken)
+      webTokenInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') saveWebToken()
+      })
+      removeWebTokenBtn.addEventListener('click', removeWebToken)
+
+      // ---- 获取 Token ----
+      getTokenBtn.addEventListener('click', () => {
+        const snippet = `const t=JSON.parse(localStorage.getItem('userToken'));if(t?.value){copy(t.value);console.log('复制成功')}`
+        navigator.clipboard.writeText(snippet)
+        showStatus('已复制提取脚本，粘贴到控制台即可复制 Token', 'info', 4000)
+        window.electronAPI.openExternal('https://platform.deepseek.com/')
+      })
+
+      // ---- 聚焦/点击自动读取剪贴板 ----
+      async function tryFillToken() {
+        if (webTokenInput.value.trim()) return
+        try {
+          const text = await window.electronAPI.readClipboard()
+          if (text && /^[A-Za-z0-9_-]{20,}$/.test(text.trim())) {
+            webTokenInput.value = text.trim()
+            showStatus('已自动填入剪贴板中的 Token', 'info', 3000)
+          }
+        } catch {}
+      }
+      webTokenInput.addEventListener('focus', () => setTimeout(tryFillToken, 150))
+      webTokenInput.addEventListener('click', tryFillToken)
+
+      refreshSelect.addEventListener('change', setRefresh)
+      thresholdInput.addEventListener('change', onThresholdChange)
+      dailyCostLowInput.addEventListener('change', onDailyCostThresholdChange)
+      dailyCostMedInput.addEventListener('change', onDailyCostThresholdChange)
+      dailyCostHighInput.addEventListener('change', onDailyCostThresholdChange)
+      colorSchemeSelect.addEventListener('change', setColorScheme)
+      autoLaunchToggle.addEventListener('change', toggleLaunch)
+
+      loadSettings()
+
+      // ---- 主题 ----
+      function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme)
+      }
+      async function initTheme() {
+        const theme = await window.electronAPI.getEffectiveTheme()
+        applyTheme(theme)
+        window.electronAPI.onThemeChange(applyTheme)
+      }
+      initTheme()
+    </script>
+  </body>
+</html>
