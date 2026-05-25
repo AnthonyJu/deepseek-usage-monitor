@@ -171,6 +171,19 @@
         box-shadow: 0 0 0 3px rgba(80, 140, 255, 0.12);
         background: rgba(255, 255, 255, 0.08);
       }
+      input[type='number']::-webkit-inner-spin-button,
+      input[type='number']::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      input[type='number'] {
+        appearance: textfield;
+        -moz-appearance: textfield;
+      }
+
+      .threshold-row input {
+        text-align: center;
+      }
 
       .btn {
         padding: 7px 14px;
@@ -484,17 +497,14 @@
         <!-- 余额预警阈值 -->
         <div class="card">
           <span class="label">余额预警阈值</span>
-          <input id="thresholdInput" type="number" placeholder="例如：10" min="0" step="0.01" />
+          <input id="thresholdInput" type="number" placeholder="例如：10" min="0" step="1" />
           <span class="desc-inline">总余额低于该金额（CNY）提示</span>
         </div>
 
         <!-- 当日花费预警阈值 -->
         <div class="card">
           <span class="label">花费预警</span>
-          <div
-            class="threshold-row"
-            style="display: flex; gap: 6px; align-items: center; margin-top: 8px"
-          >
+          <div class="threshold-row" style="display: flex; gap: 6px; align-items: center">
             <span style="font-size: 11px; color: rgba(153, 153, 153, 0.8)">低</span>
             <input
               id="dailyCostLowInput"
@@ -577,9 +587,13 @@
         removeWebTokenBtn.classList.toggle('hidden', !s.hasWebToken)
         refreshSelect.value = s.autoRefreshInterval ?? 2
         thresholdInput.value = s.balanceThreshold ?? ''
-        dailyCostLowInput.value = s.dailyCostLow ?? 2
-        dailyCostMedInput.value = s.dailyCostMed ?? 5
-        dailyCostHighInput.value = s.dailyCostHigh ?? 8
+        const low = s.dailyCostLow ?? 2
+        const med = s.dailyCostMed ?? 5
+        const high = s.dailyCostHigh ?? 8
+        dailyCostLowInput.value = low
+        dailyCostMedInput.value = med
+        dailyCostHighInput.value = high
+        lastDailyCost = { low, med, high }
         colorSchemeSelect.value = s.colorScheme ?? 'system'
         autoLaunchToggle.checked = s.autoLaunch ?? false
       }
@@ -619,6 +633,17 @@
       }
 
       let thresholdTimer, dailyCostTimer
+      let lastDailyCost = { low: 2, med: 5, high: 8 }
+      function sanitizeNumberInput(input) {
+        const raw = input.value
+        let next = raw.replace(/[^\d.]/g, '')
+        const dotIndex = next.indexOf('.')
+        if (dotIndex !== -1) {
+          next = next.slice(0, dotIndex + 1) + next.slice(dotIndex + 1).replace(/\./g, '')
+        }
+        if (next !== raw) input.value = next
+      }
+
       function onThresholdChange() {
         clearTimeout(thresholdTimer)
         thresholdTimer = setTimeout(async () => {
@@ -628,13 +653,38 @@
         }, 500)
       }
 
-      async function onDailyCostThresholdChange() {
+      async function onDailyCostThresholdChange(event) {
+        const key = event?.target?.id
         clearTimeout(dailyCostTimer)
         dailyCostTimer = setTimeout(async () => {
           const low = parseFloat(dailyCostLowInput.value) || 2
           const med = parseFloat(dailyCostMedInput.value) || 5
           const high = parseFloat(dailyCostHighInput.value) || 8
+          const revert = () => {
+            if (key === 'dailyCostLowInput') {
+              dailyCostLowInput.value = lastDailyCost.low
+            } else if (key === 'dailyCostMedInput') {
+              dailyCostMedInput.value = lastDailyCost.med
+            } else if (key === 'dailyCostHighInput') {
+              dailyCostHighInput.value = lastDailyCost.high
+            } else {
+              dailyCostLowInput.value = lastDailyCost.low
+              dailyCostMedInput.value = lastDailyCost.med
+              dailyCostHighInput.value = lastDailyCost.high
+            }
+          }
+          if (low > high) {
+            showStatus('低阈值不能高于高阈值', 'error', 3000)
+            revert()
+            return
+          }
+          if (med < low || med > high) {
+            showStatus('中阈值需介于低和高之间', 'error', 3000)
+            revert()
+            return
+          }
           await window.electronAPI.setDailyCostThresholds({ low, med, high })
+          lastDailyCost = { low, med, high }
           showStatus('阈值已更新', 'success', 3000)
         }, 500)
       }
@@ -679,6 +729,10 @@
       webTokenInput.addEventListener('click', tryFillToken)
 
       refreshSelect.addEventListener('change', setRefresh)
+      thresholdInput.addEventListener('input', () => sanitizeNumberInput(thresholdInput))
+      dailyCostLowInput.addEventListener('input', () => sanitizeNumberInput(dailyCostLowInput))
+      dailyCostMedInput.addEventListener('input', () => sanitizeNumberInput(dailyCostMedInput))
+      dailyCostHighInput.addEventListener('input', () => sanitizeNumberInput(dailyCostHighInput))
       thresholdInput.addEventListener('change', onThresholdChange)
       dailyCostLowInput.addEventListener('change', onDailyCostThresholdChange)
       dailyCostMedInput.addEventListener('change', onDailyCostThresholdChange)

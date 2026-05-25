@@ -430,7 +430,7 @@ function createSettingsWindow() {
 
   settingsWindow = new BrowserWindow({
     width: 480,
-    height: 460,
+    height: 452,
     title: 'DeepSeek Usage Monitor - 设置',
     resizable: false,
     minimizable: false,
