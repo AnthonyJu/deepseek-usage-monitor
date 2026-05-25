@@ -1,14 +1,14 @@
 # DeepSeek Usage Monitor
 
-<img src="public/logo.png" style="border-radius:14px;" alt="DeepSeek Usage Monitor" width="120" />
+<img src="public/logo.png" alt="DeepSeek Usage Monitor" width="120" />
 
 macOS 菜单栏工具，用于监控 DeepSeek API 余额与用量。
 
 ## 截图
 
 <p>
-	<img src="./docs/screenshot-dashboard.png" alt="Dashboard" style="border-radius:14px; max-width:300px; height:auto; display:block; margin-right:12px;" />
-	<img src="./docs/screenshot-settings.png" alt="Settings" style="border-radius:14px; max-width:100%; height:auto; display:block;" />
+	<img src="./docs/screenshot-dashboard.png" alt="Dashboard" width="300" style="border-radius:14px; margin-right:12px;" />
+	<img src="./docs/screenshot-settings.png" alt="Settings" width="490" style="border-radius:14px;" />
 </p>
 
 ## 功能
