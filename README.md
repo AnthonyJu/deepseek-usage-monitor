@@ -7,9 +7,7 @@ macOS 菜单栏工具，用于监控 DeepSeek API 余额与用量。
 ## 截图
 
 <p>
-	<img src="./docs/screenshot-dashboard.png" alt="Dashboard" style="border-radius:14px; max-width:100%; height:auto; display:block; margin-bottom:12px;" />
-</p>
-<p>
+	<img src="./docs/screenshot-dashboard.png" alt="Dashboard" style="border-radius:14px; max-width:300px; height:auto; display:block; margin-right:12px;" />
 	<img src="./docs/screenshot-settings.png" alt="Settings" style="border-radius:14px; max-width:100%; height:auto; display:block;" />
 </p>
 
