@@ -354,7 +354,7 @@ function createTrayWindow() {
 
   trayWindow = new BrowserWindow({
     width: 340,
-    height: 558,
+    height: 535,
     show: false,
     frame: false,
     resizable: false,
@@ -430,7 +430,7 @@ function createSettingsWindow() {
 
   settingsWindow = new BrowserWindow({
     width: 480,
-    height: 456,
+    height: 460,
     title: 'DeepSeek Usage Monitor - 设置',
     resizable: false,
     minimizable: false,

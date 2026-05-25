@@ -33,6 +33,7 @@
       .app {
         position: relative;
         height: 100%;
+        min-height: 0;
         padding: 12px;
         border-radius: 16px;
         background: rgba(20, 20, 24, 0.6);
@@ -45,6 +46,7 @@
         display: flex;
         flex-direction: column;
         gap: 10px;
+        overflow: hidden;
       }
 
       .titlebar {
@@ -96,6 +98,16 @@
         grid-template-columns: 1fr 1fr;
         gap: 10px;
         align-content: start;
+        overflow: auto;
+        flex: 1 1 auto;
+        min-height: 0;
+        -webkit-overflow-scrolling: touch;
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+      }
+
+      .grid::-webkit-scrollbar {
+        display: none;
       }
 
       .card {
@@ -478,16 +490,40 @@
 
         <!-- 当日花费预警阈值 -->
         <div class="card">
-          <span class="label">Usage · 花费预警（低 / 中 / 高 CNY）</span>
-          <div class="threshold-row" style="display:flex;gap:6px;align-items:center;margin-top:8px">
-            <span style="font-size:11px;color:rgba(153,153,153,0.8)">低</span>
-            <input id="dailyCostLowInput" type="number" placeholder="2" min="0" step="0.1" style="flex:1;min-width:0" />
-            <span style="font-size:11px;color:rgba(153,153,153,0.8)">中</span>
-            <input id="dailyCostMedInput" type="number" placeholder="5" min="0" step="0.1" style="flex:1;min-width:0" />
-            <span style="font-size:11px;color:rgba(153,153,153,0.8)">高</span>
-            <input id="dailyCostHighInput" type="number" placeholder="8" min="0" step="0.1" style="flex:1;min-width:0" />
+          <span class="label">花费预警</span>
+          <div
+            class="threshold-row"
+            style="display: flex; gap: 6px; align-items: center; margin-top: 8px"
+          >
+            <span style="font-size: 11px; color: rgba(153, 153, 153, 0.8)">低</span>
+            <input
+              id="dailyCostLowInput"
+              type="number"
+              placeholder="2"
+              min="0"
+              step="0.1"
+              style="flex: 1; min-width: 0"
+            />
+            <span style="font-size: 11px; color: rgba(153, 153, 153, 0.8)">中</span>
+            <input
+              id="dailyCostMedInput"
+              type="number"
+              placeholder="5"
+              min="0"
+              step="0.1"
+              style="flex: 1; min-width: 0"
+            />
+            <span style="font-size: 11px; color: rgba(153, 153, 153, 0.8)">高</span>
+            <input
+              id="dailyCostHighInput"
+              type="number"
+              placeholder="8"
+              min="0"
+              step="0.1"
+              style="flex: 1; min-width: 0"
+            />
           </div>
-          <span class="desc-inline">花费胶囊颜色阈值，超高档触发系统通知</span>
+          <span class="desc-inline">花费阈值（CNY），超档触发系统通知</span>
         </div>
 
         <!-- 开机自启 + 状态 -->
