@@ -43,3 +43,10 @@ pnpm electron:build
 ```
 
 产物输出到 `dist/`。
+
+> 安装包暂未代码签名，首次启动会被 Gatekeeper 拦下。
+> 解决：
+>
+> ```bash
+> xattr -dr com.apple.quarantine /Applications/DeepSeek\ Usage\ Monitor.app
+> ```
