@@ -4,7 +4,7 @@
     <div class="header" :class="{ scrolled }">
       <span class="title">DeepSeek Usage</span>
       <div class="header-actions">
-        <button class="btn-icon" title="刷新" @click="refresh">
+        <button class="btn-icon" title="刷新" @click="refresh()" :class="{ spinning: isRefreshing }">
           <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"
             stroke-linecap="round" stroke-linejoin="round">
             <path d="M13.5 8a5.5 5.5 0 0 0-10-3.5M2.5 8a5.5 5.5 0 0 0 10 3.5M13.5 1.5V5h-3.5M2.5 14.5V11h3.5" />
@@ -47,7 +47,7 @@
 
     <template v-if="!initialLoading && !balanceError">
       <!-- 余额 -->
-      <div class="card balance-card">
+      <div class="card balance-card" :class="{ 'refreshing-overlay': isRefreshing }">
         <div class="card-row">
           <span class="label">余额</span>
           <div class="row-right">
@@ -68,7 +68,7 @@
       </div>
 
       <!-- 消耗 -->
-      <div class="card chart-card">
+      <div class="card chart-card" :class="{ 'refreshing-overlay': isRefreshing }">
         <div class="flex-bc">
           <span class="label">Usage</span>
           <div class="header-right">
@@ -95,7 +95,7 @@
       </div>
 
       <!-- 每日花费 -->
-      <div class="card chart-card">
+      <div class="card chart-card" :class="{ 'refreshing-overlay': isRefreshing }">
         <div class="flex-bc">
           <span class="label">Cost </span><span class="label-today">{{ fmt(monthlyCost) }} ¥</span>
         </div>
@@ -111,7 +111,7 @@
       </div>
 
       <!-- Tokens: V4-Pro -->
-      <div class="card chart-card">
+      <div class="card chart-card" :class="{ 'refreshing-overlay': isRefreshing }">
         <div class="flex-bc">
           <span class="label">Tokens · v4-pro</span>
           <span class="label-today">{{ monthlyV4ProTotal.toLocaleString('en-US') }} tokens ·
@@ -129,7 +129,7 @@
       </div>
 
       <!-- Tokens: V4-Flash -->
-      <div class="card chart-card">
+      <div class="card chart-card" :class="{ 'refreshing-overlay': isRefreshing }">
         <div class="flex-bc">
           <span class="label">Tokens · v4-flash</span>
           <span class="label-today">{{ monthlyV4FlashTotal.toLocaleString('en-US') }} tokens ·
@@ -183,6 +183,7 @@ const monthOptions = computed(() => {
   return opts
 })
 const scrolled = ref(false)
+const isRefreshing = ref(false)
 const panelRef = ref(null)
 
 const totalBalance = computed(
@@ -612,6 +613,7 @@ function fmt(val) {
 
 async function onMonthChange() {
   usageError.value = ''
+  isRefreshing.value = true
   try {
     const [y, m] = selectedMonth.value.split('-').map(Number)
     const usage = await window.electronAPI.getUsageForMonth(y, m)
@@ -619,6 +621,8 @@ async function onMonthChange() {
     else usageData.value = usage
   } catch (err) {
     usageError.value = err.message
+  } finally {
+    setTimeout(() => { isRefreshing.value = false }, 600)
   }
 }
 
@@ -640,9 +644,15 @@ function onScroll() {
 }
 
 // 首次加载用 loading，后续静默更新
+const isFirstMount = ref(true)
+
 async function refresh(silent) {
   if (!silent) {
-    initialLoading.value = true
+    if (isFirstMount.value) {
+      initialLoading.value = true
+    } else {
+      isRefreshing.value = true
+    }
   }
   balanceError.value = ''
   usageError.value = ''
@@ -666,6 +676,8 @@ async function refresh(silent) {
   } finally {
     if (!silent) {
       initialLoading.value = false
+      isFirstMount.value = false
+      setTimeout(() => { isRefreshing.value = false }, 600)
     }
   }
 }
@@ -809,6 +821,25 @@ body {
 .btn-icon-sm {
   width: 24px;
   height: 24px;
+}
+
+.btn-icon.spinning svg {
+  animation: spin 0.7s ease-in-out;
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.refreshing-overlay {
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.06) 50%, transparent 75%) !important;
+  background-size: 200% 100% !important;
+  animation: shimmer 0.8s ease-in-out;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 .btn-icon:hover,
