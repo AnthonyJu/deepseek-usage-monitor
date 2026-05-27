@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build && cp src/settings.html dist/settings.html",
-    "electron:dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && electron . --dev\"",
+    "electron:dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && ELECTRON_RUN_AS_NODE= electron . --dev\"",
     "electron:build": "vite build && cp src/settings.html dist/settings.html && electron-builder",
     "preview": "vite preview"
   },
@@ -29,11 +29,17 @@
     "electron",
     "menu-bar"
   ],
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "electron",
+      "esbuild"
+    ]
+  },
   "license": "MIT",
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.1.4",
     "concurrently": "^9.0.1",
-    "electron": "^32.1.2",
+    "electron": "^36.9.5",
     "electron-builder": "^25.1.7",
     "vite": "^5.4.8",
     "wait-on": "^8.0.0"

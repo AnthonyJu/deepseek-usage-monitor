@@ -197,20 +197,20 @@ const tokenDays = computed(() => usageData.value?.tokenDays || [])
 
 const dailyCostThres = ref({ low: 2, med: 5, high: 8 })
 
-const today = new Date().toISOString().slice(0, 10)
+const todayDate = ref(new Date().toISOString().slice(0, 10))
 
 const costToday = computed(() => {
-  const d = costDays.value.find((d) => d.date === today)
+  const d = costDays.value.find((d) => d.date === todayDate.value)
   return d ? d.total : 0
 })
 const tokenProToday = computed(() => {
-  const d = tokenDays.value.find((d) => d.date === today)
+  const d = tokenDays.value.find((d) => d.date === todayDate.value)
   if (!d?.byModel?.['deepseek-v4-pro']) return 0
   const m = d.byModel['deepseek-v4-pro']
   return (m.cacheHit || 0) + (m.cacheMiss || 0) + (m.output || 0)
 })
 const tokenFlashToday = computed(() => {
-  const d = tokenDays.value.find((d) => d.date === today)
+  const d = tokenDays.value.find((d) => d.date === todayDate.value)
   if (!d?.byModel?.['deepseek-v4-flash']) return 0
   const m = d.byModel['deepseek-v4-flash']
   return (m.cacheHit || 0) + (m.cacheMiss || 0) + (m.output || 0)
@@ -228,7 +228,7 @@ function hitPct(hit, miss) {
 
 function todaySumByType(type) {
   return computed(() => {
-    const d = tokenDays.value.find((dd) => dd.date === today)
+    const d = tokenDays.value.find((dd) => dd.date === todayDate.value)
     if (!d) return 0
     let sum = 0
     for (const m of Object.values(d.byModel || {})) {
@@ -525,7 +525,7 @@ const consumptionChartOption = computed(() => {
     ]
     breakdowns = [t, p, f]
   } else {
-    const d = tokenDays.value.find((dd) => dd.date === today)
+    const d = tokenDays.value.find((dd) => dd.date === todayDate.value)
     const pm = d?.byModel?.['deepseek-v4-pro'] || {}
     const fm = d?.byModel?.['deepseek-v4-flash'] || {}
     values = [
@@ -654,6 +654,7 @@ async function refresh(silent) {
       isRefreshing.value = true
     }
   }
+  todayDate.value = new Date().toISOString().slice(0, 10)
   balanceError.value = ''
   usageError.value = ''
   try {
@@ -695,6 +696,7 @@ onMounted(async () => {
 
   refresh(false)
   window.electronAPI.onDataUpdate(({ balance, usage }) => {
+    todayDate.value = new Date().toISOString().slice(0, 10)
     if (balance?.error) {
       balanceError.value = balance.error
     } else if (balance) {

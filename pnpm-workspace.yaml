@@ -1,4 +1,0 @@
-allowBuilds:
-  electron: false
-  esbuild: false
-onlyBuiltDependencies: '["electron","esbuild"]'

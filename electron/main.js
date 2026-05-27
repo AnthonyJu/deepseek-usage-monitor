@@ -360,9 +360,10 @@ function createTrayWindow() {
     resizable: false,
     skipTaskbar: true,
     alwaysOnTop: true,
-    transparent: true,
-    vibrancy: 'popover',
+    transparent: !isDev,
+    vibrancy: isDev ? undefined : 'popover',
     visualEffectState: 'active',
+    backgroundColor: isDev ? '#1a1a2e' : undefined,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -390,6 +391,14 @@ function createTrayWindow() {
   trayWindow.webContents.on('console-message', (_event, level, message) => {
     const prefix = ['', 'WARN', 'ERR', ''][level] || 'LOG'
     console.log('[Renderer ' + prefix + '] ' + message)
+  })
+
+  trayWindow.webContents.on('did-fail-load', (_event, errorCode, errorDescription, validatedURL) => {
+    console.error('[Window] Failed to load:', errorDescription, 'URL:', validatedURL)
+  })
+
+  trayWindow.webContents.on('did-finish-load', () => {
+    console.log('[Window] Page loaded successfully')
   })
 }
 
