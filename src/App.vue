@@ -279,7 +279,7 @@ const costColor = computed(() => {
   const { low, med, high } = dailyCostThres.value
   if (c >= high) return '#ef4444'
   if (c >= med) return '#f59e0b'
-  if (c >= low) return '#eab308'
+  if (c >= low) return '#409eff'
   return '#22c55e'
 })
 
@@ -622,7 +622,9 @@ async function onMonthChange() {
   } catch (err) {
     usageError.value = err.message
   } finally {
-    setTimeout(() => { isRefreshing.value = false }, 600)
+    setTimeout(() => {
+      isRefreshing.value = false
+    }, 600)
   }
 }
 
@@ -678,7 +680,9 @@ async function refresh(silent) {
     if (!silent) {
       initialLoading.value = false
       isFirstMount.value = false
-      setTimeout(() => { isRefreshing.value = false }, 600)
+      setTimeout(() => {
+        isRefreshing.value = false
+      }, 600)
     }
   }
 }
@@ -828,20 +832,35 @@ body {
 .btn-icon.spinning svg {
   animation: spin 0.7s ease-in-out;
 }
+
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .refreshing-overlay {
   pointer-events: none;
-  background: linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.06) 50%, transparent 75%) !important;
+  background: linear-gradient(90deg,
+      transparent 25%,
+      rgba(255, 255, 255, 0.06) 50%,
+      transparent 75%) !important;
   background-size: 200% 100% !important;
   animation: shimmer 0.8s ease-in-out;
 }
+
 @keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 .btn-icon:hover,
